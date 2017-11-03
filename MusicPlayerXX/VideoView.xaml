@@ -33,10 +33,12 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Content="Select file" Command="{Binding CmdSelectFile}"/>
             <Button Grid.Column="1" Content="Play" Command="{Binding CmdPlayVideo}"/>
             <Button Grid.Column="2" Content="Stop" Command="{Binding CmdStopVideo}"/>
+            <Button Grid.Column="3" Content="Skip" Command="{Binding CmdSkipSong}"/>
         </Grid>
     </Grid>
 </UserControl>

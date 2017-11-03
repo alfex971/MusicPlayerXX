@@ -16,6 +16,7 @@ namespace MusicPlayerXX
 {
     public class VideoViewModel:INotifyPropertyChanged
     {
+        private int nextId = 0;
         private MediaElement _mediaElementObject;
         private ICommand _selectFile;
         private ICommand _playVideo;
@@ -23,7 +24,7 @@ namespace MusicPlayerXX
         private ICommand _stopVideo;
         private ObservableCollection<Song> _songs;
         public Song SelectedSong { get; set; }
-
+        public Song PlayingSong { get; set; }
         public ObservableCollection<Song> Songs
         {
             get { return _songs; }
@@ -57,11 +58,13 @@ namespace MusicPlayerXX
             set { _stopVideo = value; }
         }
 
+        public ICommand CmdSkipSong { get; set; }
         public VideoViewModel()
         {
             CmdSelectFile = new ActionCommand(OpenFileAction);
             CmdPlayVideo = new ActionCommand(PlayVideoAction);
             CmdStopVideo = new ActionCommand(StopVideoAction);
+            CmdSkipSong = new ActionCommand(SkipVideoAction);
         }
 
         public void StopVideoAction()
@@ -72,9 +75,24 @@ namespace MusicPlayerXX
         public void PlayVideoAction()
         {
             MediaElementObject.Source = new Uri(SelectedSong.Path);
+            PlayingSong = SelectedSong;
             MediaElementObject?.Play();
         }
+        public void SkipVideoAction()
+        {
 
+            var songId= Songs.FirstOrDefault(song => song.Path == PlayingSong.Path).Id;
+            songId++;
+            var nextSongToplay = Songs.FirstOrDefault(s => s.Id == songId);
+            if (nextSongToplay==null)
+            {
+                songId = 0;
+                nextSongToplay = Songs.FirstOrDefault(s => s.Id == songId);
+            }
+            MediaElementObject.Source=new Uri(nextSongToplay.Path);
+            MediaElementObject?.Play();
+            PlayingSong = nextSongToplay;
+        }
         public void OpenFileAction()
         {
             Songs = new ObservableCollection<Song>();
@@ -86,7 +104,7 @@ namespace MusicPlayerXX
                 _selectedFile = fileBrowser.FileNames;
                 foreach (var song in _selectedFile)
                 {
-                    Song s = new Song() { Path = song };
+                    Song s = new Song() { Path = song,Id = nextId++};
                     Songs.Add(s);
                 }
                 MediaElementObject = new MediaElement();
